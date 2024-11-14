@@ -1,20 +1,17 @@
 import "./App.css";
 import { useState, useRef } from "react";
-import MyCamera from "./Components/MyCamera";
 import ImagePreview from "./Components/ImagePreview";
 
 function App(props) {
   // for upload image
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+
   const fileInputRef = useRef(null);
-  // Function to close the popup
-  const closePopup = () => {
-    setIsOpen(false);
-    setSelectedImage(null); // Clear the selected image
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset the file input value
-    }
+
+  const closeTutorial = () => {
+    setIsTutorialOpen(false);
   };
 
   // Handle file input change
@@ -25,6 +22,7 @@ function App(props) {
       reader.onloadend = () => {
         setSelectedImage(reader.result);
         setIsOpen(true);
+        closeTutorial(); 
       };
       reader.readAsDataURL(file);
     }
@@ -32,37 +30,46 @@ function App(props) {
 
   return (
     <div className="">
-      <div className="flex justify-center items-center flex-col py-10">
-        <h1 className="text-center font-bold text-xl"> Your Plant </h1>
-        <p> Status: Healthy </p>
-        <img src="/plant.png" className="max-w-[70%] bg-white" />
-      </div>
+      {isTutorialOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-2">
+            <h2 className="text-2xl font-bold text-green-600 mb-4">
+              Welcome to Plant Assistant!
+            </h2>
+            <p className="text-gray-700 mb-4">
+              🌱 Hi there! Plant Assistant is here to help you:
+            </p>
+            <ul className="text-gray-600 mb-4 list-disc list-inside space-y-2">
+              <li>Identify potential plant diseases based on your photos.</li>
+              <li>
+                Double-check symptoms to ensure our suggestions match your
+                plant's condition.
+              </li>
+              <li>Keep a record of your plant pictures for easy reference.</li>
+            </ul>
 
+            <label className="mb-4 text-center cursor-pointer bg-green-500 text-white py-2 px-4 rounded w-[200px]">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                ref={fileInputRef} // for clearing the ref after closing the pop up
+                className="hidden"
+              />
+              Choose Image
+            </label>
+          </div>
+        </div>
+      )}
 
-      {/* choose image */}
-      <div className="flex flex-col items-center"> 
-        {/* the camera component using a npm package; Ignored for now */}
-        {/* <MyCamera /> */}
-        <button className="mb-4 cursor-pointer bg-blue-500 text-white py-2 px-4 rounded w-[200px]">
-          Take a picture
-        </button>
-
-        <label className="mb-4 text-center cursor-pointer bg-blue-500 text-white py-2 px-4 rounded w-[200px]">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            ref={fileInputRef} // for clearing the ref after closing the pop up 
-            className="hidden"
-          />
-          Choose Image
-        </label>
-
-        {/* Image preview */}
-        {isOpen && (
-          <ImagePreview imgsrc = {selectedImage} handleClose={closePopup} />
-        )}
-      </div>
+      <ImagePreview
+        imgsrc={selectedImage}
+        handleImageUpload={handleImageUpload}
+        setSelectedImage={setSelectedImage}
+        fileInputRef={fileInputRef}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
     </div>
   );
 }
