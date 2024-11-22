@@ -7,7 +7,7 @@ function App(props) {
   // for upload image
   const [selectedImage, setSelectedImage] = useState(null);
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); 
 
   const images = [
     { src: "/disease/1.JPG", caption: "12/23/2024" },
@@ -30,7 +30,8 @@ function App(props) {
         setIsOpen(true);
         closeTutorial();
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); 
+      e.target.value = null; //resetting value so onChange is triggered even input file is the same as last time
     }
   };
 
@@ -83,12 +84,12 @@ function App(props) {
                 onChange={handleImageUpload}
                 className="hidden"
               />
-              Choose Image
+              Start Analyzing
             </label>
           </div>
         </div>
       )}
-      
+
       <FeedbackForm />
 
       {/* upload another image */}
