@@ -9,6 +9,7 @@ function App(props) {
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
   const [isOpen, setIsOpen] = useState(false); 
 
+  // fake data 
   const images = [
     { src: "/disease/1.JPG", caption: "12/23/2024" },
     { src: "/disease/1.JPG", caption: "12/23/2024" },
@@ -34,6 +35,7 @@ function App(props) {
       e.target.value = null; //resetting value so onChange is triggered even input file is the same as last time
     }
   };
+
 
   return (
     <div className="">
@@ -94,7 +96,7 @@ function App(props) {
 
       {/* upload another image */}
       <ImagePreview
-        imgsrc={selectedImage}
+        selectedImage={selectedImage}
         handleImageUpload={handleImageUpload}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
@@ -110,7 +112,7 @@ function App(props) {
             <img
               src="/plant.png"
               alt="Plant Image"
-              className="rounded-md mb-4 w-[80%]"
+              className="rounded-md mb-4 w-[80%]" 
             />
 
             <div className="flex flex-row items-center space-x-2 mb-2">

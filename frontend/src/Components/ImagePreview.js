@@ -1,13 +1,15 @@
 import { useState } from "react";
 import AnalyzeResult from "./AnalyzeResult";
+import axios from "axios";
 
 function ImagePreview({
-  imgsrc,
+  selectedImage,
   handleImageUpload,
   isOpen,
   setIsOpen,
 }) {
   const [isResultOpen, setIsResultOpen] = useState(false);
+  const [response, setResponse] = useState(null);
 
   const openResult = () => {
     setIsResultOpen(true);
@@ -20,6 +22,34 @@ function ImagePreview({
     // if (fileInputRef.current) {
     //   fileInputRef.current.value = ""; // Reset the file input value
     // }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedImage) {
+      console.log("Please select an image to upload.")
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", selectedImage); // Append the image file with the key "image"
+
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/predict", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setResponse(res.data); // Store the backend's response
+      // debugging 
+      if (response.data) {console.log(response.data)}
+      else {console.log('empty response')}
+      
+    } catch (err) {
+      console.error("Error uploading image:", err);
+    } finally {
+      openResult(); 
+      console.log('finished sending image to backend')
+    }
   };
 
   return (
@@ -49,7 +79,7 @@ function ImagePreview({
             </button>
 
             {/* Image */}
-            <img src={imgsrc} alt="Preview" className="rounded-md my-4" />
+            <img src={selectedImage} alt="Preview" className="rounded-md my-4" />
 
             <p className="text-center mb-4 font-bold">
               {" "}
@@ -70,7 +100,7 @@ function ImagePreview({
 
               <label
                 className="text-center cursor-pointer bg-green-500 text-white font-bold py-2 px-4 rounded w-full"
-                onClick={openResult}
+                onClick={handleUpload}
               >
                 Analyze
               </label>
@@ -80,7 +110,7 @@ function ImagePreview({
       )}
 
       {/* Disease analysis result */}
-      {isResultOpen && <AnalyzeResult plantImg = {imgsrc} />}
+      {isResultOpen && <AnalyzeResult plantImg = {selectedImage} />}
     </>
   );
 }
