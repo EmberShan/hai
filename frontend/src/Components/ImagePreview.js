@@ -7,9 +7,12 @@ function ImagePreview({
   handleImageUpload,
   isOpen,
   setIsOpen,
+  file,
 }) {
   const [isResultOpen, setIsResultOpen] = useState(false);
-  const [response, setResponse] = useState(null);
+
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const openResult = () => {
     setIsResultOpen(true);
@@ -26,31 +29,39 @@ function ImagePreview({
 
   const handleUpload = async () => {
     if (!selectedImage) {
-      console.log("Please select an image to upload.")
+      console.log("Please select an image to upload.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("image", selectedImage); // Append the image file with the key "image"
+    formData.append("image", file);
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/predict", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        body: formData,
       });
-      setResponse(res.data); // Store the backend's response
-      // debugging 
-      if (response.data) {console.log(response.data)}
-      else {console.log('empty response')}
-      
+
+      const data = await response.json();
+
+      if (data.predicted_class !== undefined) {
+        setResult({
+          predicted_class: data.predicted_class,
+          confidence: data.confidence.toFixed(2),
+        });
+        console.log('result: ', data.predicted_class, data.confidence.toFixed(2)); 
+        setError(null);
+        openResult(); 
+      } else {
+        setResult(null);
+        setError(data.error);
+      }
     } catch (err) {
-      console.error("Error uploading image:", err);
-    } finally {
-      openResult(); 
-      console.log('finished sending image to backend')
+      setResult(null);
+      setError(err.message);
+      console.log(err.message)
     }
-  };
+  }; 
 
   return (
     <>
@@ -79,7 +90,11 @@ function ImagePreview({
             </button>
 
             {/* Image */}
-            <img src={selectedImage} alt="Preview" className="rounded-md my-4" />
+            <img
+              src={selectedImage}
+              alt="Preview"
+              className="rounded-md my-4"
+            />
 
             <p className="text-center mb-4 font-bold">
               {" "}
@@ -110,7 +125,7 @@ function ImagePreview({
       )}
 
       {/* Disease analysis result */}
-      {isResultOpen && <AnalyzeResult plantImg = {selectedImage} />}
+      {isResultOpen && <AnalyzeResult plantImg={selectedImage} resule={result} />}
     </>
   );
 }

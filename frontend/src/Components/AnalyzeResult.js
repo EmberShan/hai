@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function AnalyzeResult({ plantImg }) {
+function AnalyzeResult({ plantImg, result }) {
   const [isOpen, setIsOpen] = useState(true);
   const images = [
     { src: plantImg, caption: "50% Late Blight" },
@@ -54,7 +54,7 @@ function AnalyzeResult({ plantImg }) {
                     94% Match
                   </div>
                   <div class="inline-block rounded-full bg-green-100 border border-green-200 px-4 py-1 text-sm text-green-700">
-                    Curable 
+                    Curable
                   </div>
                 </div>
                 {/* <div className="flex flex-col justify-center items-center">

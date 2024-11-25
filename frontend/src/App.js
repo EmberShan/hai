@@ -6,10 +6,11 @@ import FeedbackForm from "./Components/FeedbackForm";
 function App(props) {
   // for upload image
   const [selectedImage, setSelectedImage] = useState(null);
+  const [file, setFile] = useState(null);
   const [isTutorialOpen, setIsTutorialOpen] = useState(true);
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
 
-  // fake data 
+  // fake data
   const images = [
     { src: "/disease/1.JPG", caption: "12/23/2024" },
     { src: "/disease/1.JPG", caption: "12/23/2024" },
@@ -24,6 +25,7 @@ function App(props) {
   // Handle file input change
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+    setFile(file); //for backend
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -31,11 +33,10 @@ function App(props) {
         setIsOpen(true);
         closeTutorial();
       };
-      reader.readAsDataURL(file); 
+      reader.readAsDataURL(file);
       e.target.value = null; //resetting value so onChange is triggered even input file is the same as last time
     }
   };
-
 
   return (
     <div className="">
@@ -100,11 +101,11 @@ function App(props) {
         handleImageUpload={handleImageUpload}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        file={file}
       />
 
       {/* homepage (diary): recently uploaded images */}
       <div className="flex flex-col justify-center p-10 space-y-2">
-
         <div className="mx-auto space-y-2 w-full flex flex-col justify-center mb-4">
           <p className="font-bold text-center"> Last checked: 2 days ago </p>
           {/* most recently analyzed image of the plant */}
@@ -112,7 +113,7 @@ function App(props) {
             <img
               src="/plant.png"
               alt="Plant Image"
-              className="rounded-md mb-4 w-[80%]" 
+              className="rounded-md mb-4 w-[80%]"
             />
 
             <div className="flex flex-row items-center space-x-2 mb-2">
