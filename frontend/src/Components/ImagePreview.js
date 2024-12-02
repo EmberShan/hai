@@ -1,6 +1,5 @@
 import { useState } from "react";
 import AnalyzeResult from "./AnalyzeResult";
-import axios from "axios";
 
 function ImagePreview({
   selectedImage,
